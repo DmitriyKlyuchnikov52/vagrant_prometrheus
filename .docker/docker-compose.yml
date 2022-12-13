@@ -1,0 +1,42 @@
+version: '3'
+services:
+  prometheus:
+    restart: unless-stopped
+    image: prom/prometheus:v2.40.6
+    container_name: prometheus
+    volumes:
+      - ./prometheus_config/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=100d'
+      - '--storage.tsdb.retention.size=30GB'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+  grafana:
+    restart: unless-stopped
+    image: grafana/grafana:9.3.1
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - ./grafana_config:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+      - ./grafana.db:/var/lib/grafana/grafana.db
+    env_file:
+      - config
+    environment:
+      - GF_INSTALL_PLUGINS=natel-discrete-panel,bessler-pictureit-panel,grafana-clock-panel,grafana-piechart-panel,neocat-cal-heatmap-panel,petrslavotinek-carpetplot-panel,flant-statusmap-panel,mxswat-separator-panel,michaeldmoore-multistat-panel,savantly-heatmap-panel
+
+volumes:
+    prometheus_data:
+    prometheus_config:
+    grafana_data:
+    grafana_config:
+    grafana_logs:
