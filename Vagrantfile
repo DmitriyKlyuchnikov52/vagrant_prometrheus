@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.box = "generic/ubuntu2004"
     config.vm.box_download_insecure=true
-    config.vm.network :private_network, ip: "192.168.10.50"
+    config.vm.network :private_network, ip: "192.168.56.1"
     config.vm.network :forwarded_port, host: 3000, guest: 3000
     config.vm.network :forwarded_port, host: 9090, guest: 9090
     config.ssh.forward_agent = true
